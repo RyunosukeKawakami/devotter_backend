@@ -38,20 +38,10 @@ exports.devotterCronJob = functions.https.onRequest(async (request, response) =>
                 access_token_key: accessToken,
                 access_token_secret: accessTokenSecret
             });
-            client.get('statuses/user_timeline', (error, data, res) => {
-                if (!error) {
-                    response.status(200).send(data);
-                }
-                else {
-                    response.status(200).send(error);
-                }
-            });
+            client.get('statuses/user_timeline', ResponseData(error,data,res));
             return 0;
         })
-        .catch(() => {
-            response.status(200).send('Access Promise for each collection failed.');
-            return 0;
-        });
+        .catch(ResponsePromiseFailed());
 
     // bucket.file('ac.json').download()
     //     .then((result) => {
@@ -74,3 +64,17 @@ exports.devotterCronJob = functions.https.onRequest(async (request, response) =>
     //         return 0;
     //     });
 });
+
+function ResponseData(error, data, res) {
+    if (!error) {
+        response.status(200).send(data);
+    }
+    else {
+        response.status(200).send(error);
+    }
+}
+
+function ResponsePromiseFailed(){
+    response.status(200).send('Access Promise for each collection failed.');
+    return 0;
+}
